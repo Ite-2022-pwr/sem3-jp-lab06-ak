@@ -5,7 +5,6 @@ import ite.jp.ak.lab06.keeper.shared.Keeper;
 import ite.jp.ak.lab06.utils.dao.*;
 import ite.jp.ak.lab06.utils.enums.PacketType;
 import ite.jp.ak.lab06.utils.enums.ResponseType;
-import ite.jp.ak.lab06.utils.enums.Role;
 import ite.jp.ak.lab06.utils.model.*;
 import ite.jp.ak.lab06.utils.network.Listener;
 import ite.jp.ak.lab06.utils.network.Sender;
