@@ -10,6 +10,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>utils</module>
+        <module>keeper</module>
+        <module>customer</module>
     </modules>
 
     <properties>

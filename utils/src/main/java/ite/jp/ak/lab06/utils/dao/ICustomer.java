@@ -1,8 +1,6 @@
 package ite.jp.ak.lab06.utils.dao;
 
-import ite.jp.ak.lab06.utils.model.Product;
-import ite.jp.ak.lab06.utils.model.Response;
-import ite.jp.ak.lab06.utils.model.User;
+import ite.jp.ak.lab06.utils.model.*;
 
 public interface ICustomer extends IResponder {
 
@@ -13,22 +11,22 @@ public interface ICustomer extends IResponder {
      * (pomijamy stronicowanie).
      * @param response
      */
-    @Override
-    void response(Response response);
+//    @Override
+//    void response(Response response);
 
     /**
      * Metoda putOrder(idd,data) pozwalać ma Dostawcy na przekazanie Klientowi towarów zgodnie
      * ze złożonym przez niego zamówieniem (które Klient złożył u Magazyniera).
      * Atrybut idd to identyfikator Dostawcy (np. "1", natomiast data to lista towarów (np. "towar1,towar2,towar3").
      * Znajomość idd pozwolić ma Klientowi na zwrócenie towarów za pośrednictwem Dostawcy (jeszcze przed pójściem do kasy).
-     * @param product
+     * @param order
      */
-    void putOrder(User deliver, Product[] product);
+    void putOrder(Order order);
 
     /**
      * Metoda returnReceipt(data) pozwalać ma Sprzedawcy na przekazanie rachunku.
      * W tym przypadku atrybut data reprezentować ma ten rachunek.
-     * @param product - TODO: change to receipt
+     * @param receipt
      */
-    void returnReceipt(Product product);
+    void returnReceipt(Receipt receipt);
 }

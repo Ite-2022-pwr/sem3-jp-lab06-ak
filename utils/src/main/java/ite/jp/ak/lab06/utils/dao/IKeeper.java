@@ -32,9 +32,9 @@ public interface IKeeper {
 
     /**
      * Metoda putOrder(idc, data) pozwalać ma Klientowi na złożenie zamówienia na towary.
-     * @param customer
+     * @param order
      */
-    void putOrder(User customer, Product product);
+    void putOrder(Order order);
 
     /**
      * Metoda getOrder(idd) pozwalać ma Dostawcy na pobranie pierwszego nieobsłużonego jeszcze
@@ -46,9 +46,9 @@ public interface IKeeper {
 
     /**
      * Metoda returnOrder(data) służyć ma do oddania do magazynu towarów zwróconych przez Klienta.
-     * @param product
+     * @param order
      */
-    void returnOrder(Product product);
+    void returnOrder(Order order);
 
     /**
      * Metoda getInfo(id1,id2) pozwalać ma Klientowi lub pracownikowi (Dostawcy lub Sprzedawcy)

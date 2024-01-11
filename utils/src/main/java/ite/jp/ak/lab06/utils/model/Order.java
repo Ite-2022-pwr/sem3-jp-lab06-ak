@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class Order {
     private Integer id;
-    private Product product;
+    private Product[] products;
     private User client;
 }

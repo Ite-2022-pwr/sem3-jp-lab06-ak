@@ -1,5 +1,6 @@
 package ite.jp.ak.lab06.utils.dao;
 
+import ite.jp.ak.lab06.utils.model.Order;
 import ite.jp.ak.lab06.utils.model.Product;
 import ite.jp.ak.lab06.utils.model.Response;
 
@@ -18,14 +19,14 @@ public interface IDeliver extends IResponder {
      * że adres Klienta, o którego zapytał Dostawca, to host=localhost, port=400.
      * @param response
      */
-    @Override
-    void response(Response response);
+//    @Override
+//    void response(Response response);
 
     /**
      * Metoda returnOrder(data) pozwalać ma Klientowi zwrócić towary, które wcześniej otrzymał.
      * Towary te zapisane są w atrybucie data (np. data="towar1").
      * Lista zwracanych atrybutów musi mieć część wspólną z listą towarów dostarczonych Klientowi przez Dostawcę.
-     * @param product
+     * @param order
      */
-    void returnOrder(Product[] product);
+    void returnOrder(Order order);
 }
