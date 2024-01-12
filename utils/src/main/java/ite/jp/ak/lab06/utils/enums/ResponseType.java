@@ -4,4 +4,5 @@ public enum ResponseType {
     RegisterResponse,
     GetOfferResponse,
     GetOrderResponse,
+    GetInfoResponse
 }

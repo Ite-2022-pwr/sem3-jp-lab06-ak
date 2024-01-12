@@ -1,6 +1,7 @@
 package ite.jp.ak.lab06.utils.network;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ite.jp.ak.lab06.utils.dao.ITriggerable;
 import ite.jp.ak.lab06.utils.model.Packet;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,11 @@ import java.nio.charset.StandardCharsets;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public abstract class Listener {
+public abstract class Listener implements Runnable {
     private final String host;
     private final Integer port;
+
+    private final ITriggerable triggerable;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -78,4 +81,17 @@ public abstract class Listener {
 
     public abstract void processPacket(Packet packet);
 
+    public void trigger() {
+        if (triggerable != null) {
+            triggerable.trigger();
+        }
+    }
+
+    public void run() {
+        try {
+            this.start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

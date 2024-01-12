@@ -28,7 +28,7 @@ public class Main {
             user.setPort(2137);
             user.setRole(Role.Customer);
 
-            Payload payload = Payload.fromObject(user);
+            Payload payload = Payload.fromObject(user, User.class);
 
             Packet pkt = new Packet();
             pkt.setType(PacketType.RegisterRequest);

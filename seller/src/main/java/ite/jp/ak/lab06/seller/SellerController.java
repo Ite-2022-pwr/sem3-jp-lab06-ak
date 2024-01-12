@@ -1,9 +1,9 @@
-package ite.jp.ak.lab06.customer;
+package ite.jp.ak.lab06.seller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
-public class HelloController {
+public class SellerController {
     @FXML
     private Label welcomeText;
 

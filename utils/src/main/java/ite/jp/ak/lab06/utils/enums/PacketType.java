@@ -6,4 +6,8 @@ public enum PacketType {
     GetOfferRequest,
     GetOrderRequest,
     RegisterRequest,
+    UnregisterRequest,
+    ReturnOrderRequest,
+    PutOrderRequest,
+
 }

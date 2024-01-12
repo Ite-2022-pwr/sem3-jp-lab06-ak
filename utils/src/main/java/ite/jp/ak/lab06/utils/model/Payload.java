@@ -14,12 +14,13 @@ public class Payload {
         return objectMapper.readValue(this.data, dataType);
     }
 
-    public static <T> Payload fromObject(T object) throws JsonProcessingException {
+    public static <T> Payload fromObject(T object, Class<T> objectType) throws JsonProcessingException {
         var objectMapper = new ObjectMapper();
         var data = objectMapper.writeValueAsString(object);
         var payload = new Payload();
         payload.setData(data);
-        payload.setType(object.getClass());
+        payload.setType(objectType);
+        System.out.println(payload);
         return payload;
     }
 }

@@ -3,6 +3,7 @@ package ite.jp.ak.lab06.keeper;
 import ite.jp.ak.lab06.keeper.service.KeeperServer;
 import ite.jp.ak.lab06.keeper.shared.Keeper;
 import ite.jp.ak.lab06.utils.dao.ITriggerable;
+import ite.jp.ak.lab06.utils.model.Order;
 import ite.jp.ak.lab06.utils.model.Product;
 import ite.jp.ak.lab06.utils.model.User;
 import javafx.application.Platform;
@@ -12,7 +13,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
@@ -54,6 +54,16 @@ public class KeeperController implements ITriggerable {
     // Add new product
     @FXML private TextField newProductNameTextField;
 
+    // Orders tab
+    @FXML private Tab ordersTab;
+
+    // Orders table
+    @FXML private TableView<Order> ordersTableView;
+    @FXML private TableColumn<Order, String> orderIdTableColumn;
+    @FXML private TableColumn<Order, String> orderClientTableColumn;
+    @FXML private TableColumn<Order, String> orderProductsTableColumn;
+    @FXML private TableColumn<Order, String> orderStatusTableColumn;
+
     private final Keeper keeper = Keeper.getInstance();
 
     public void trigger() {
@@ -68,6 +78,11 @@ public class KeeperController implements ITriggerable {
 
         productsIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         productsNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        orderIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        orderClientTableColumn.setCellValueFactory(new PropertyValueFactory<>("client"));
+        orderProductsTableColumn.setCellValueFactory(new PropertyValueFactory<>("products"));
+        orderStatusTableColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
     }
 
     public void fillUsersTableView() {
@@ -82,9 +97,16 @@ public class KeeperController implements ITriggerable {
         productsTableView.setItems(products);
     }
 
+    public void fillOrdersTableView() {
+        ordersTableView.getItems().clear();
+        ObservableList<Order> orders = FXCollections.observableArrayList(keeper.getOrders());
+        ordersTableView.setItems(orders);
+    }
+
     public void refreshView() {
         fillUsersTableView();
         fillProductsTableView();
+        fillOrdersTableView();
         productIdLabel.setText("ID: ");
         productNameLabel.setText("Nazwa: ");
     }
@@ -103,9 +125,9 @@ public class KeeperController implements ITriggerable {
             var serverThread = new Thread(new KeeperServer(host, port, this));
             serverThread.setDaemon(true);
             serverThread.start();
-            testConnection(host, port);
-            startServerButton.setDisable(true);
-            startServerButton.setVisible(false);
+//            testConnection(host, port);
+//            startServerButton.setDisable(true);
+//            startServerButton.setVisible(false);
             listeningLabel.setText("Nasłuchiwanie na " + host + ":" + port + " [Aktywne]");
         } catch (Exception e) {
             alert.setContentText(e.getMessage());

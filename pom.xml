@@ -12,6 +12,8 @@
         <module>utils</module>
         <module>keeper</module>
         <module>customer</module>
+        <module>deliver</module>
+        <module>seller</module>
     </modules>
 
     <properties>

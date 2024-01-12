@@ -9,10 +9,10 @@ public class Response {
     private ResponseType type;
     private Payload payload;
 
-    public static <T> Response fromObject(ResponseType type, T data) throws JsonProcessingException {
+    public static <T> Response fromObject(ResponseType type, T data, Class<T> dataType) throws JsonProcessingException {
         var response = new Response();
         response.setType(type);
-        response.setPayload(Payload.fromObject(data));
+        response.setPayload(Payload.fromObject(data, dataType));
         return response;
     }
 }

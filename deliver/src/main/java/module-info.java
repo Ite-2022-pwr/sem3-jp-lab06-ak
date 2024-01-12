@@ -1,4 +1,4 @@
-module ite.jp.ak.lab06.customer {
+module ite.jp.ak.lab06.deliver {
     requires javafx.controls;
     requires javafx.fxml;
     requires lombok;
@@ -7,6 +7,6 @@ module ite.jp.ak.lab06.customer {
     requires com.fasterxml.jackson.core;
 
 
-    opens ite.jp.ak.lab06.customer to javafx.fxml;
-    exports ite.jp.ak.lab06.customer;
+    opens ite.jp.ak.lab06.deliver to javafx.fxml;
+    exports ite.jp.ak.lab06.deliver;
 }

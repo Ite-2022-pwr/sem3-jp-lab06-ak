@@ -95,6 +95,22 @@
                   </AnchorPane>
             </content>
           </Tab>
+            <Tab fx:id="ordersTab" text="Zamówienia">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="ordersTableView" layoutX="21.0" layoutY="14.0" prefHeight="613.0" prefWidth="895.0">
+                          <columns>
+                            <TableColumn fx:id="orderIdTableColumn" prefWidth="102.0" text="ID" />
+                            <TableColumn fx:id="orderClientTableColumn" prefWidth="314.0" text="Klient" />
+                              <TableColumn fx:id="orderProductsTableColumn" prefWidth="302.0" text="Zamówione produkty" />
+                              <TableColumn fx:id="orderStatusTableColumn" prefWidth="176.0" text="Status" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
         </tabs>
       </TabPane>
    </children>
