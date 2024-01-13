@@ -9,4 +9,6 @@ module ite.jp.ak.lab06.seller {
 
     opens ite.jp.ak.lab06.seller to javafx.fxml;
     exports ite.jp.ak.lab06.seller;
+    exports ite.jp.ak.lab06.seller.shared;
+    exports ite.jp.ak.lab06.seller.service;
 }

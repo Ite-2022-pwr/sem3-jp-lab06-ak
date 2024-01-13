@@ -9,4 +9,6 @@ module ite.jp.ak.lab06.deliver {
 
     opens ite.jp.ak.lab06.deliver to javafx.fxml;
     exports ite.jp.ak.lab06.deliver;
+    exports ite.jp.ak.lab06.deliver.service;
+    exports ite.jp.ak.lab06.deliver.shared;
 }

@@ -8,4 +8,6 @@ module ite.jp.ak.lab06.keeper {
 
     opens ite.jp.ak.lab06.keeper to javafx.fxml;
     exports ite.jp.ak.lab06.keeper;
+    exports ite.jp.ak.lab06.keeper.service;
+    exports ite.jp.ak.lab06.keeper.shared;
 }

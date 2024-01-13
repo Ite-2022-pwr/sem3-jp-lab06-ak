@@ -9,5 +9,7 @@ public enum PacketType {
     UnregisterRequest,
     ReturnOrderRequest,
     PutOrderRequest,
+    AcceptOrderRequest,
+    ReturnReceiptRequest,
 
 }

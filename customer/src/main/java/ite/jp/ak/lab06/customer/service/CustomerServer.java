@@ -5,13 +5,9 @@ import ite.jp.ak.lab06.customer.shared.Customer;
 import ite.jp.ak.lab06.utils.dao.ICustomer;
 import ite.jp.ak.lab06.utils.dao.IKeeper;
 import ite.jp.ak.lab06.utils.dao.ITriggerable;
-import ite.jp.ak.lab06.utils.enums.PacketType;
 import ite.jp.ak.lab06.utils.model.*;
 import ite.jp.ak.lab06.utils.network.Listener;
-import ite.jp.ak.lab06.utils.network.Sender;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerServer extends Listener implements ICustomer, IKeeper {
@@ -43,6 +39,15 @@ public class CustomerServer extends Listener implements ICustomer, IKeeper {
                 try {
                     var order = payload.decodeData(Order.class);
                     putOrder(order);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            case ReturnReceiptRequest -> {
+                var payload = packet.getPayload();
+                try {
+                    var receipt = payload.decodeData(Receipt.class);
+                    returnReceipt(receipt);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
@@ -86,13 +91,18 @@ public class CustomerServer extends Listener implements ICustomer, IKeeper {
 
     @Override
     public User getInfo(User user, User requestedUser) {
-        // TODO: implement
+        switch (requestedUser.getRole()) {
+            case Deliver -> customer.setLastRequestedDeliver(requestedUser);
+            case Seller -> customer.setLastRequestedSeller(requestedUser);
+            default -> throw new RuntimeException("Unknown user role");
+        }
         return null;
     }
 
     @Override
     public void returnReceipt(Receipt receipt) {
-        // TODO: implement
+        customer.getReceipts().add(receipt);
+        trigger();
     }
 
     @Override
@@ -122,7 +132,7 @@ public class CustomerServer extends Listener implements ICustomer, IKeeper {
                 var payload = response.getPayload();
                 try {
                     var requestedUser = payload.decodeData(User.class);
-                    customer.setLastRequestedUser(requestedUser);
+                    getInfo(user, requestedUser);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }

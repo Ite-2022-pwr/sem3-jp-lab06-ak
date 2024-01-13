@@ -5,7 +5,10 @@ import ite.jp.ak.lab06.customer.shared.Customer;
 import ite.jp.ak.lab06.utils.dao.ITriggerable;
 import ite.jp.ak.lab06.utils.enums.OrderStatus;
 import ite.jp.ak.lab06.utils.model.Order;
+import ite.jp.ak.lab06.utils.model.Receipt;
+import ite.jp.ak.lab06.utils.model.Packet;
 import ite.jp.ak.lab06.utils.model.Product;
+import ite.jp.ak.lab06.utils.model.User;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -69,6 +72,20 @@ public class CustomerController implements ITriggerable {
     @FXML private TableColumn<Product, String> toReturnIdTableColumn;
     @FXML private TableColumn<Product, String> toReturnNameTableColumn;
 
+    // Receipts Tab
+    @FXML private Tab receiptsTab;
+
+    // Receipts table
+    @FXML private TableView<Order> receiptsOrderTableView;
+    @FXML private TableColumn<Order, String> receiptsOrderIdTableColumn;
+    @FXML private TableColumn<Order, String> receiptsOrderStatusTableColumn;
+
+    @FXML private Label sellerIdLabel;
+
+    // Bought products table
+    @FXML private TableView<Product> boughtProductsTableView;
+    @FXML private TableColumn<Product, String> boughtProductsNameTableColumn;
+
 
     private final Customer customer = Customer.getInstance();
     private final List<Product> newOrderProductList = new ArrayList<>();
@@ -96,6 +113,11 @@ public class CustomerController implements ITriggerable {
 
         toReturnIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         toReturnNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        receiptsOrderIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        receiptsOrderStatusTableColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        boughtProductsNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         hostTextField.setText("localhost");
         portTextField.setText("4444");
@@ -134,9 +156,34 @@ public class CustomerController implements ITriggerable {
         toReturnTableView.setItems(products);
     }
 
+    public void fillReceiptsTableView() {
+        receiptsOrderTableView.getItems().clear();
+        List<Order> receiptOrdersInfo = customer.getReceipts().stream().map(Receipt::getOrder).toList();
+        ObservableList<Order> receiptOrders = FXCollections.observableArrayList(receiptOrdersInfo);
+        receiptsOrderTableView.setItems(receiptOrders);
+    }
+
+    public void fillBoughtProductsTableView() {
+        boughtProductsTableView.getItems().clear();
+        Order selectedReceiptOrder = receiptsOrderTableView.getSelectionModel().getSelectedItem();
+        if (selectedReceiptOrder == null || selectedReceiptOrder.getStatus() == OrderStatus.Cancelled) {
+            return;
+        }
+
+        var receipt = customer.getReceipts().stream().filter(r -> r.getOrder().getId().equals(selectedReceiptOrder.getId())).findFirst().orElse(null);
+        if (receipt != null) {
+            sellerIdLabel.setText("ID sprzedawcy: " + receipt.getSeller().getId());
+        }
+
+        var orderInfo = List.of(selectedReceiptOrder.getProducts());
+        ObservableList<Product> products = FXCollections.observableArrayList(orderInfo);
+        boughtProductsTableView.setItems(products);
+    }
+
     public void refreshView() {
         fillProductsTableView();
         fillOrdersTableView();
+        fillReceiptsTableView();
         productNameLabel.setText("Nazwa: ");
     }
 
@@ -169,11 +216,19 @@ public class CustomerController implements ITriggerable {
         socketChannel.close();
     }
 
+    private boolean isServerActive() {
+        return listeningLabel.getText().contains("Aktywne");
+    }
+
     public void registerToKeeper(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText("Błąd rejestracji");
         try {
+            if (!isServerActive()) {
+                throw new Exception("Serwer nie jest aktywny - najpierw zacznij nasłuchiwać");
+            }
+
             var host = keeperHostTextField.getText();
             if (host.isBlank()) {
                 throw new Exception("Host nie może być pusty");
@@ -277,8 +332,30 @@ public class CustomerController implements ITriggerable {
             setProducts(toReturnProductList.toArray(new Product[0]));
         }};
         customer.returnOrder(returnProductsOrder);
+        var productList = new ArrayList<>(List.of(order.getProducts()));
+        productList.removeAll(toReturnProductList);
+        order.setProducts(productList.toArray(new Product[0]));
         toReturnProductList.clear();
         fillToReturnTableView();
         fillToBuyTableView();
+    }
+
+    public void acceptOrder(ActionEvent event) {
+        var order = ordersTableView.getSelectionModel().getSelectedItem();
+        if (order == null) {
+            return;
+        }
+
+        customer.acceptOrder(order);
+        toBuyProductList.clear();
+        toReturnProductList.clear();
+        refreshView();
+        fillToBuyTableView();
+        fillToReturnTableView();
+        sellerIdLabel.setText("ID sprzedawcy: ");
+    }
+
+    public void onSelectedReceiptOrder(MouseEvent event) {
+        fillBoughtProductsTableView();
     }
 }

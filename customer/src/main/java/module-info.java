@@ -9,4 +9,6 @@ module ite.jp.ak.lab06.customer {
 
     opens ite.jp.ak.lab06.customer to javafx.fxml;
     exports ite.jp.ak.lab06.customer;
+    exports ite.jp.ak.lab06.customer.service;
+    exports ite.jp.ak.lab06.customer.shared;
 }

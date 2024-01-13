@@ -68,11 +68,19 @@ public class DeliverController implements ITriggerable {
         socketChannel.close();
     }
 
+    private boolean isServerActive() {
+        return listeningLabel.getText().contains("Aktywne");
+    }
+
     public void registerToKeeper(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText("Błąd rejestracji");
         try {
+            if (!isServerActive()) {
+                throw new Exception("Serwer nie jest aktywny - najpierw zacznij nasłuchiwać");
+            }
+
             var host = keeperHostTextField.getText();
             if (host.isBlank()) {
                 throw new Exception("Host nie może być pusty");
