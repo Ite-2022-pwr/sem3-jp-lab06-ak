@@ -68,7 +68,6 @@ public class CustomerServer extends Listener implements ICustomer, IKeeper {
 
     @Override
     public Product[] getOffer(User customer) {
-        // TODO: implement
         return new Product[0];
     }
 
@@ -80,13 +79,12 @@ public class CustomerServer extends Listener implements ICustomer, IKeeper {
 
     @Override
     public Order getOrder(User deliver) {
-        // TODO: implement
         return null;
     }
 
     @Override
     public void returnOrder(Order order) {
-        // TODO: implement
+
     }
 
     @Override
