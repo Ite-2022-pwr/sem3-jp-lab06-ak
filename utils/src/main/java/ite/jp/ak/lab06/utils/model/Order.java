@@ -7,6 +7,7 @@ import lombok.Data;
 public class Order {
     private Integer id;
     private Product[] products;
-    private User client;
+    private User customer;
+    private User deliver;
     private OrderStatus status;
 }

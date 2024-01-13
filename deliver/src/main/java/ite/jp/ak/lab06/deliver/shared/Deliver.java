@@ -1,6 +1,7 @@
-package ite.jp.ak.lab06.customer.shared;
+package ite.jp.ak.lab06.deliver.shared;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import ite.jp.ak.lab06.utils.dao.ICustomer;
 import ite.jp.ak.lab06.utils.dao.IKeeper;
 import ite.jp.ak.lab06.utils.enums.PacketType;
 import ite.jp.ak.lab06.utils.enums.Role;
@@ -9,24 +10,28 @@ import ite.jp.ak.lab06.utils.network.Sender;
 import lombok.Getter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Getter
-public class Customer implements IKeeper {
-    private static Customer instance;
+public class Deliver implements IKeeper, ICustomer {
 
-    private final User customer = new User() {{
-        setRole(Role.Customer);
+    private static Deliver instance;
+
+    private Deliver() {}
+
+    public static Deliver getInstance() {
+        if (instance == null) {
+            instance = new Deliver();
+        }
+        return instance;
+    }
+
+    private final User deliver = new User() {{
+        setRole(Role.Deliver);
     }};
 
     private final User keeper = new User() {{
         setRole(Role.Keeper);
     }};
-
-    private final List<Product> storeOffer = Collections.synchronizedList(new ArrayList<>());
-    private final List<Order> orders = Collections.synchronizedList(new ArrayList<>());
 
     private User lastRequestedUser;
 
@@ -38,13 +43,14 @@ public class Customer implements IKeeper {
         return lastRequestedUser;
     }
 
-    private Customer() {}
+    private Order lastFetchOrder;
 
-    public static Customer getInstance() {
-        if (instance == null) {
-            instance = new Customer();
-        }
-        return instance;
+    public synchronized void setLastFetchOrder(Order order) {
+        lastFetchOrder = order;
+    }
+
+    public synchronized Order getLastFetchOrder() {
+        return lastFetchOrder;
     }
 
     public boolean isKeeperKnown() {
@@ -78,6 +84,11 @@ public class Customer implements IKeeper {
     }
 
     @Override
+    public void returnReceipt(Receipt receipt) {
+
+    }
+
+    @Override
     public void unregister(User user) {
         if (!isKeeperKnown()) {
             throw new RuntimeException("Keeper is not known");
@@ -103,73 +114,41 @@ public class Customer implements IKeeper {
 
     @Override
     public Product[] getOffer(User customer) {
-        var packet = new Packet() {{
-           setType(PacketType.GetOfferRequest);
-           setSender(customer);
-            try {
-                setPayload(Payload.fromObject(customer, User.class));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }};
-        var sender = new Sender();
-        try {
-            sender.sendTo(getKeeper(), packet);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return null;
+        return new Product[0];
     }
 
     @Override
     public void putOrder(Order order) {
+
+    }
+
+    @Override
+    public Order getOrder(User deliver) {
         if (!isKeeperKnown()) {
             throw new RuntimeException("Keeper is not known");
         }
         var packet = new Packet() {{
-            setType(PacketType.PutOrderRequest);
-            setSender(customer);
+            setType(PacketType.GetOrderRequest);
+            setSender(deliver);
             try {
-                setPayload(Payload.fromObject(order, Order.class));
+                setPayload(Payload.fromObject(deliver, User.class));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         }};
+
         var sender = new Sender();
         try {
             sender.sendTo(getKeeper(), packet);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Order getOrder(User deliver) {
         return null;
     }
 
     @Override
     public void returnOrder(Order order) {
-        var packet = new Packet() {{
-            setType(PacketType.ReturnOrderRequest);
-            setSender(customer);
-            try {
-                setPayload(Payload.fromObject(order, Order.class));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }};
-
-        var sender = new Sender();
-        try {
-            getInfo(customer, order.getDeliver());
-            User deliver;
-            while ((deliver = getLastRequestedUser()) == null) {}
-            sender.sendTo(deliver, packet);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        // TODO: implement
     }
 
     @Override
@@ -193,5 +172,10 @@ public class Customer implements IKeeper {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    @Override
+    public void response(User user, Response response) {
+        // TODO: implement
     }
 }

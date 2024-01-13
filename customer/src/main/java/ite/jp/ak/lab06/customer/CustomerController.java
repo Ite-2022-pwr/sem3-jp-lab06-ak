@@ -3,6 +3,8 @@ package ite.jp.ak.lab06.customer;
 import ite.jp.ak.lab06.customer.service.CustomerServer;
 import ite.jp.ak.lab06.customer.shared.Customer;
 import ite.jp.ak.lab06.utils.dao.ITriggerable;
+import ite.jp.ak.lab06.utils.enums.OrderStatus;
+import ite.jp.ak.lab06.utils.model.Order;
 import ite.jp.ak.lab06.utils.model.Product;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -11,10 +13,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomerController implements ITriggerable {
     // Server info
@@ -41,7 +46,36 @@ public class CustomerController implements ITriggerable {
     // Product info
     @FXML private Label productNameLabel;
 
+    // Cart
+    @FXML private TableView<Product> cartTableView;
+    @FXML private TableColumn<Product, String> cartIdTableColumn;
+    @FXML private TableColumn<Product, String> cartNameTableColumn;
+
+    // Orders Tab
+    @FXML private Tab ordersTab;
+
+    // Orders table
+    @FXML private TableView<Order> ordersTableView;
+    @FXML private TableColumn<Order, String> ordersIdTableColumn;
+    @FXML private TableColumn<Order, String> ordersStatusTableColumn;
+
+    // To buy table
+    @FXML private TableView<Product> toBuyTableView;
+    @FXML private TableColumn<Product, String> toBuyIdTableColumn;
+    @FXML private TableColumn<Product, String> toBuyNameTableColumn;
+
+    // To return table
+    @FXML private TableView<Product> toReturnTableView;
+    @FXML private TableColumn<Product, String> toReturnIdTableColumn;
+    @FXML private TableColumn<Product, String> toReturnNameTableColumn;
+
+
     private final Customer customer = Customer.getInstance();
+    private final List<Product> newOrderProductList = new ArrayList<>();
+    private Product selectedProduct;
+
+    private final List<Product> toBuyProductList = new ArrayList<>();
+    private final List<Product> toReturnProductList = new ArrayList<>();
 
     public void trigger() {
         Platform.runLater(this::refreshView);
@@ -50,6 +84,24 @@ public class CustomerController implements ITriggerable {
     public void initialize() {
         productsIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         productsNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        cartIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        cartNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        ordersIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        ordersStatusTableColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        toBuyIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        toBuyNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        toReturnIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        toReturnNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        hostTextField.setText("localhost");
+        portTextField.setText("4444");
+
+        keeperHostTextField.setText("localhost");
+        keeperPortTextField.setText("1337");
     }
 
     public void fillProductsTableView() {
@@ -58,8 +110,33 @@ public class CustomerController implements ITriggerable {
         productsTableView.setItems(products);
     }
 
+    public void fillCartTableView() {
+        cartTableView.getItems().clear();
+        ObservableList<Product> products = FXCollections.observableArrayList(newOrderProductList);
+        cartTableView.setItems(products);
+    }
+
+    public void fillOrdersTableView() {
+        ordersTableView.getItems().clear();
+        ObservableList<Order> orders = FXCollections.observableArrayList(customer.getOrders());
+        ordersTableView.setItems(orders);
+    }
+
+    public void fillToBuyTableView() {
+        toBuyTableView.getItems().clear();
+        ObservableList<Product> products = FXCollections.observableArrayList(toBuyProductList);
+        toBuyTableView.setItems(products);
+    }
+
+    public void fillToReturnTableView() {
+        toReturnTableView.getItems().clear();
+        ObservableList<Product> products = FXCollections.observableArrayList(toReturnProductList);
+        toReturnTableView.setItems(products);
+    }
+
     public void refreshView() {
         fillProductsTableView();
+        fillOrdersTableView();
         productNameLabel.setText("Nazwa: ");
     }
 
@@ -116,5 +193,92 @@ public class CustomerController implements ITriggerable {
 
     public void refreshOffer(ActionEvent event) {
         customer.getOffer(customer.getCustomer());
+    }
+
+    public void addToCart(ActionEvent event) {
+        var product = productsTableView.getSelectionModel().getSelectedItem();
+        if (product == null) {
+            return;
+        }
+        if (newOrderProductList.contains(product)) {
+            return;
+        }
+        newOrderProductList.add(product);
+        fillCartTableView();
+    }
+
+    public void onSelectedProductFromOffer(MouseEvent event) {
+        var product = productsTableView.getSelectionModel().getSelectedItem();
+        if (product == null) {
+            return;
+        }
+        productNameLabel.setText("Nazwa: " + product.getName());
+        this.selectedProduct = product;
+    }
+
+    public void putOrder(ActionEvent event) {
+        var order = new Order();
+        order.setCustomer(customer.getCustomer());
+        order.setProducts(newOrderProductList.toArray(new Product[0]));
+        customer.putOrder(order);
+        newOrderProductList.clear();
+        fillCartTableView();
+    }
+
+    public void onSelectedOrder(MouseEvent event) {
+        var order = ordersTableView.getSelectionModel().getSelectedItem();
+        if (order == null) {
+            return;
+        }
+        toBuyProductList.clear();
+        toReturnProductList.clear();
+
+        for (var product : order.getProducts()) {
+            if (!product.isToReturn()) {
+                toBuyProductList.add(product);
+            } else  {
+                toReturnProductList.add(product);
+            }
+        }
+
+        fillToBuyTableView();
+        fillToReturnTableView();
+    }
+
+    public void onSelectedProductFromToBuy(MouseEvent event) {
+        var product = toBuyTableView.getSelectionModel().getSelectedItem();
+        if (product == null) {
+            return;
+        }
+        product.setToReturn(true);
+        onSelectedOrder(event);
+    }
+
+    public void onSelectedProductFromToReturn(MouseEvent event) {
+        var product = toReturnTableView.getSelectionModel().getSelectedItem();
+        if (product == null) {
+            return;
+        }
+        product.setToReturn(false);
+        onSelectedOrder(event);
+    }
+
+    public void returnOrder(ActionEvent event) {
+        var order = ordersTableView.getSelectionModel().getSelectedItem();
+        if (order == null || toReturnProductList.isEmpty()) {
+            return;
+        }
+
+        var returnProductsOrder = new Order() {{
+            setId(order.getId());
+            setStatus(OrderStatus.Returned);
+            setCustomer(order.getCustomer());
+            setDeliver(order.getDeliver());
+            setProducts(toReturnProductList.toArray(new Product[0]));
+        }};
+        customer.returnOrder(returnProductsOrder);
+        toReturnProductList.clear();
+        fillToReturnTableView();
+        fillToBuyTableView();
     }
 }

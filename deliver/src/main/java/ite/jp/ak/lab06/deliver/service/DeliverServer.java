@@ -1,7 +1,7 @@
-package ite.jp.ak.lab06.customer.service;
+package ite.jp.ak.lab06.deliver.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import ite.jp.ak.lab06.customer.shared.Customer;
+import ite.jp.ak.lab06.deliver.shared.Deliver;
 import ite.jp.ak.lab06.utils.dao.ICustomer;
 import ite.jp.ak.lab06.utils.dao.IKeeper;
 import ite.jp.ak.lab06.utils.dao.ITriggerable;
@@ -11,17 +11,15 @@ import ite.jp.ak.lab06.utils.network.Listener;
 import ite.jp.ak.lab06.utils.network.Sender;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-public class CustomerServer extends Listener implements ICustomer, IKeeper {
+public class DeliverServer extends Listener implements ICustomer, IKeeper {
 
-    private final Customer customer = Customer.getInstance();
+    private final Deliver deliver = Deliver.getInstance();
 
-    public CustomerServer(String host, Integer port, ITriggerable triggerable) {
+    public DeliverServer(String host, Integer port, ITriggerable triggerable) {
         super(host, port, triggerable);
-        customer.getCustomer().setHost(host);
-        customer.getCustomer().setPort(port);
+        deliver.getDeliver().setHost(host);
+        deliver.getDeliver().setPort(port);
     }
 
     @Override
@@ -38,11 +36,11 @@ public class CustomerServer extends Listener implements ICustomer, IKeeper {
                     throw new RuntimeException(e);
                 }
             }
-            case PutOrderRequest -> {
+            case ReturnOrderRequest -> {
                 var payload = packet.getPayload();
                 try {
                     var order = payload.decodeData(Order.class);
-                    putOrder(order);
+                    returnOrder(order);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
@@ -50,49 +48,81 @@ public class CustomerServer extends Listener implements ICustomer, IKeeper {
             default -> throw new RuntimeException("Unknown packet type");
         }
     }
-
     @Override
     public void register(User user) {
-        customer.getCustomer().setId(user.getId());
+        deliver.getDeliver().setId(user.getId());
     }
 
     @Override
     public void unregister(User user) {
-        customer.unregister(user);
+        deliver.unregister(user);
     }
 
     @Override
     public Product[] getOffer(User customer) {
-        // TODO: implement
         return new Product[0];
     }
 
     @Override
     public void putOrder(Order order) {
-        customer.getOrders().add(order);
-        trigger();
+        var packet = new Packet() {{
+            setType(PacketType.PutOrderRequest);
+            try {
+                setPayload(Payload.fromObject(order, Order.class));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }};
+
+        deliver.getInfo(deliver.getDeliver(), order.getCustomer());
+        System.out.println(deliver.getLastRequestedUser());
+        new Thread(() -> {
+            User customer;
+            while ((customer = deliver.getLastRequestedUser()) == null) {}
+            try {
+                var sender = new Sender();
+                sender.sendTo(customer, packet);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            deliver.setLastRequestedUser(null);
+        }).start();
+//            var customer = order.getCustomer();
+        deliver.setLastFetchOrder(null);
     }
 
     @Override
     public Order getOrder(User deliver) {
-        // TODO: implement
         return null;
     }
 
     @Override
     public void returnOrder(Order order) {
-        // TODO: implement
+        var packet = new Packet() {{
+            setType(PacketType.ReturnOrderRequest);
+            try {
+                setSender(deliver.getDeliver());
+                setPayload(Payload.fromObject(order, Order.class));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }};
+        var sender = new Sender();
+        try {
+            sender.sendTo(deliver.getKeeper(), packet);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public User getInfo(User user, User requestedUser) {
-        // TODO: implement
         return null;
     }
 
     @Override
     public void returnReceipt(Receipt receipt) {
-        // TODO: implement
+
     }
 
     @Override
@@ -107,22 +137,20 @@ public class CustomerServer extends Listener implements ICustomer, IKeeper {
                     throw new RuntimeException(e);
                 }
             }
-            case GetOfferResponse -> {
-                var payload = response.getPayload();
+            case GetInfoResponse -> {
                 try {
-                    var products = payload.decodeData(Product[].class);
-                    customer.getStoreOffer().clear();
-                    customer.getStoreOffer().addAll(List.of(products));
-                    trigger();
+                    var requestedUser = response.getPayload().decodeData(User.class);
+                    deliver.setLastRequestedUser(requestedUser);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
             }
-            case GetInfoResponse -> {
-                var payload = response.getPayload();
+            case GetOrderResponse -> {
                 try {
-                    var requestedUser = payload.decodeData(User.class);
-                    customer.setLastRequestedUser(requestedUser);
+                    var order = response.getPayload().decodeData(Order.class);
+                    deliver.setLastFetchOrder(order);
+                    trigger();
+                    putOrder(order);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }

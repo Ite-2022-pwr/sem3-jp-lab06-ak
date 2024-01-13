@@ -20,7 +20,7 @@ public class Payload {
         var payload = new Payload();
         payload.setData(data);
         payload.setType(objectType);
-        System.out.println(payload);
+//        System.out.println(payload);
         return payload;
     }
 }

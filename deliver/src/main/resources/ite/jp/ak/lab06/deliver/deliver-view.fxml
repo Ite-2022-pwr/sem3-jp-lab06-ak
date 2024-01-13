@@ -1,16 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="ite.jp.ak.lab06.deliver.DeliverController">
-  <padding>
-    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-  </padding>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-  <Label fx:id="welcomeText"/>
-  <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ite.jp.ak.lab06.deliver.DeliverController">
+   <children>
+      <TextField fx:id="hostTextField" layoutX="48.0" layoutY="86.0" />
+      <TextField fx:id="portTextField" layoutX="239.0" layoutY="86.0" prefHeight="24.0" prefWidth="84.0" />
+      <Label fx:id="listeningLabel" layoutX="48.0" layoutY="34.0" text="Nasłuch na:">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="48.0" layoutY="62.0" text="host" />
+      <Label layoutX="239.0" layoutY="62.0" text="port" />
+      <Button fx:id="startServerButton" layoutX="345.0" layoutY="86.0" mnemonicParsing="false" onAction="#startListening" text="Start" />
+      <Label layoutX="225.0" layoutY="83.0" text=":">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <TextField fx:id="keeperHostTextField" layoutX="656.0" layoutY="96.0" />
+      <TextField fx:id="keeperPortTextField" layoutX="847.0" layoutY="96.0" prefHeight="24.0" prefWidth="84.0" />
+      <Label fx:id="listeningLabel1" layoutX="656.0" layoutY="44.0" text="Połącz się z magazynierem">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="656.0" layoutY="72.0" text="host" />
+      <Label layoutX="847.0" layoutY="72.0" text="port" />
+      <Button layoutX="953.0" layoutY="96.0" mnemonicParsing="false" onAction="#registerToKeeper" text="Zarejestruj się" />
+      <Label layoutX="833.0" layoutY="93.0" text=":">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="orderLabel" layoutX="347.0" layoutY="283.0" text="Brak zamówień do przyjęcia">
+         <font>
+            <Font size="36.0" />
+         </font>
+      </Label>
+      <Button layoutX="461.0" layoutY="549.0" mnemonicParsing="false" onAction="#getOrder" text="Przyjmij zamówienie">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>

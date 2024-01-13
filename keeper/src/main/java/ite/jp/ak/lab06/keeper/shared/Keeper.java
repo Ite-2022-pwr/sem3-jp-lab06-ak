@@ -59,10 +59,14 @@ public class Keeper {
 
     public void addOrder(Order order) {
         order.setId(nextOrderId++);
+        order.setStatus(OrderStatus.Ordered);
         orders.add(order);
     }
 
     public User getUserById(Integer userId) {
+        if (userId.equals(0)) {
+            return registeredUsers.stream().filter(u -> u.getRole() == Role.Seller).findFirst().orElse(null);
+        }
         return registeredUsers.stream().filter(u -> u.getId().equals(userId)).findFirst().orElse(null);
     }
 

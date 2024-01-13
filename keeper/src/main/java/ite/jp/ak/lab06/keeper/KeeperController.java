@@ -80,9 +80,22 @@ public class KeeperController implements ITriggerable {
         productsNameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         orderIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        orderClientTableColumn.setCellValueFactory(new PropertyValueFactory<>("client"));
+        orderClientTableColumn.setCellValueFactory(new PropertyValueFactory<>("customer"));
         orderProductsTableColumn.setCellValueFactory(new PropertyValueFactory<>("products"));
         orderStatusTableColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        hostTextField.setText("localhost");
+        portTextField.setText("1337");
+
+        keeper.addProduct(new Product() {{
+            setName("Kubek");
+        }});
+        keeper.addProduct(new Product() {{
+            setName("Koszulka");
+        }});
+        keeper.addProduct(new Product() {{
+            setName("Bluza");
+        }});
     }
 
     public void fillUsersTableView() {
@@ -169,4 +182,5 @@ public class KeeperController implements ITriggerable {
         productIdLabel.setText("ID: " + product.getId());
         productNameLabel.setText("Nazwa: " + product.getName());
     }
+
 }

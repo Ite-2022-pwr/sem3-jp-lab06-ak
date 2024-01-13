@@ -29,11 +29,11 @@
       </Label>
       <TabPane fx:id="tabPane" layoutX="14.0" layoutY="131.0" prefHeight="658.0" prefWidth="1171.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab text="Dostępne produkty">
+          <Tab fx:id="productsTab" text="Dostępne produkty">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="productsTableView" layoutX="14.0" layoutY="45.0" prefHeight="576.0" prefWidth="335.0">
+                        <TableView fx:id="productsTableView" layoutX="14.0" layoutY="45.0" onMouseClicked="#onSelectedProductFromOffer" prefHeight="576.0" prefWidth="335.0">
                           <columns>
                             <TableColumn fx:id="productsIdTableColumn" prefWidth="93.0" text="ID" />
                             <TableColumn fx:id="productsNameTableColumn" prefWidth="241.0" text="Nazwa" />
@@ -49,7 +49,7 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <Button layoutX="388.0" layoutY="142.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="233.0" text="Dodaj do zamówienia">
+                        <Button layoutX="388.0" layoutY="142.0" mnemonicParsing="false" onAction="#addToCart" prefHeight="33.0" prefWidth="233.0" text="Dodaj do zamówienia">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -59,10 +59,10 @@
                               <Font size="14.0" />
                            </font>
                         </Button>
-                        <TableView layoutX="780.0" layoutY="60.0" prefHeight="310.0" prefWidth="335.0">
+                        <TableView fx:id="cartTableView" layoutX="780.0" layoutY="60.0" prefHeight="310.0" prefWidth="335.0">
                            <columns>
-                              <TableColumn prefWidth="93.0" text="ID" />
-                              <TableColumn prefWidth="241.0" text="Nazwa" />
+                              <TableColumn fx:id="cartIdTableColumn" prefWidth="93.0" text="ID" />
+                              <TableColumn fx:id="cartNameTableColumn" prefWidth="241.0" text="Nazwa" />
                            </columns>
                         </TableView>
                         <Label layoutX="780.0" layoutY="30.0" text="Zamówienie">
@@ -70,7 +70,7 @@
                               <Font size="24.0" />
                            </font>
                         </Label>
-                        <Button layoutX="811.0" layoutY="392.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="233.0" text="Zamów produkty">
+                        <Button layoutX="811.0" layoutY="392.0" mnemonicParsing="false" onAction="#putOrder" prefHeight="33.0" prefWidth="233.0" text="Zamów produkty">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -78,11 +78,61 @@
                      </children></AnchorPane>
             </content>
           </Tab>
-          <Tab text="Moje zamówienia">
+          <Tab fx:id="ordersTab" text="Moje zamówienia">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="ordersTableView" layoutX="21.0" layoutY="14.0" onMouseClicked="#onSelectedOrder" prefHeight="603.0" prefWidth="260.0">
+                          <columns>
+                            <TableColumn fx:id="ordersIdTableColumn" prefWidth="75.0" text="ID" />
+                            <TableColumn fx:id="ordersStatusTableColumn" prefWidth="198.0" text="Status" />
+                          </columns>
+                        </TableView>
+                        <Label layoutX="584.0" layoutY="14.0" text="Szczegóły zamówienia">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="474.0" layoutY="65.0" text="Do kupienia">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="865.0" layoutY="65.0" text="Do zwrotu">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="toBuyTableView" layoutX="428.0" layoutY="105.0" onMouseClicked="#onSelectedProductFromToBuy" prefHeight="251.0" prefWidth="237.0">
+                          <columns>
+                            <TableColumn fx:id="toBuyIdTableColumn" prefWidth="75.0" text="ID" />
+                            <TableColumn fx:id="toBuyNameTableColumn" prefWidth="161.0" text="Nazwa produktu" />
+                          </columns>
+                        </TableView>
+                        <TableView fx:id="toReturnTableView" layoutX="793.0" layoutY="105.0" onMouseClicked="#onSelectedProductFromToReturn" prefHeight="251.0" prefWidth="237.0">
+                           <columns>
+                              <TableColumn fx:id="toReturnIdTableColumn" prefWidth="75.0" text="ID" />
+                              <TableColumn fx:id="toReturnNameTableColumn" prefWidth="161.0" text="Nazwa produktu" />
+                           </columns>
+                        </TableView>
+                        <Button layoutX="637.0" layoutY="456.0" mnemonicParsing="false" text="Przejdź do kasy">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Button>
+                        <Button layoutX="847.0" layoutY="373.0" mnemonicParsing="false" onAction="#returnOrder" text="Zwróć produkty">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                     </children></AnchorPane>
             </content>
           </Tab>
+            <Tab text="Paragony">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
         </tabs>
       </TabPane>
       <TextField fx:id="keeperHostTextField" layoutX="646.0" layoutY="86.0" />

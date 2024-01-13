@@ -6,5 +6,5 @@ import lombok.Data;
 public class Product {
     private Integer id;
     private String name;
-    private boolean returned;
+    private boolean toReturn;
 }

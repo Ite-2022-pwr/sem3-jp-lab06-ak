@@ -152,6 +152,7 @@ public class KeeperServer extends Listener implements IKeeper, ICustomer, IRespo
     @Override
     public Order getOrder(User deliver) {
         var order = keeper.getFirstOrderToAccept();
+        order.setDeliver(deliver);
         var response = new Response() {{
             setType(ResponseType.GetOrderResponse);
             try {
@@ -161,6 +162,7 @@ public class KeeperServer extends Listener implements IKeeper, ICustomer, IRespo
             }
         }};
         response(deliver, response);
+        trigger();
         return order;
     }
 
