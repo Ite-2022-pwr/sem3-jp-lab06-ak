@@ -96,6 +96,8 @@ public class KeeperController implements ITriggerable {
         keeper.addProduct(new Product() {{
             setName("Bluza");
         }});
+
+        fillProductsTableView();
     }
 
     public void fillUsersTableView() {
